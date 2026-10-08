@@ -263,6 +263,96 @@ mod test {
     }
 
     #[test]
+    fn test_update_status_accepted_to_rejected() {
+        let env = Env::default();
+        let contract_id = env.register(ProposalRegistry, ());
+        let client = ProposalRegistryClient::new(&env, &contract_id);
+
+        let admin = Address::generate(&env);
+        let pdf_hash = Bytes::from_slice(&env, b"abc123def456");
+
+        env.mock_all_auths();
+
+        client.store_proposal(
+            &admin,
+            &String::from_str(&env, "prop-005"),
+            &String::from_str(&env, "client@example.com"),
+            &pdf_hash,
+            &1000000000,
+        );
+
+        client.update_status(
+            &admin,
+            &String::from_str(&env, "prop-005"),
+            &String::from_str(&env, "accepted"),
+        );
+
+        let proposal = client
+            .get_proposal(&String::from_str(&env, "prop-005"))
+            .unwrap();
+        assert_eq!(proposal.status, String::from_str(&env, "accepted"));
+
+        client.update_status(
+            &admin,
+            &String::from_str(&env, "prop-005"),
+            &String::from_str(&env, "rejected"),
+        );
+
+        let proposal = client
+            .get_proposal(&String::from_str(&env, "prop-005"))
+            .unwrap();
+        assert_eq!(proposal.status, String::from_str(&env, "rejected"));
+    }
+
+    #[test]
+    fn test_update_status_paid_to_completed() {
+        let env = Env::default();
+        let contract_id = env.register(ProposalRegistry, ());
+        let client = ProposalRegistryClient::new(&env, &contract_id);
+
+        let admin = Address::generate(&env);
+        let pdf_hash = Bytes::from_slice(&env, b"abc123def456");
+
+        env.mock_all_auths();
+
+        client.store_proposal(
+            &admin,
+            &String::from_str(&env, "prop-006"),
+            &String::from_str(&env, "client@example.com"),
+            &pdf_hash,
+            &1000000000,
+        );
+
+        client.update_status(
+            &admin,
+            &String::from_str(&env, "prop-006"),
+            &String::from_str(&env, "accepted"),
+        );
+
+        client.update_status(
+            &admin,
+            &String::from_str(&env, "prop-006"),
+            &String::from_str(&env, "paid"),
+        );
+
+        let proposal = client
+            .get_proposal(&String::from_str(&env, "prop-006"))
+            .unwrap();
+        assert_eq!(proposal.status, String::from_str(&env, "paid"));
+
+        client.update_status(
+            &admin,
+            &String::from_str(&env, "prop-006"),
+            &String::from_str(&env, "completed"),
+        );
+
+        let proposal = client
+            .get_proposal(&String::from_str(&env, "prop-006"))
+            .unwrap();
+        assert_eq!(proposal.status, String::from_str(&env, "completed"));
+    }
+
+    #[test]
     fn test_verify_hash() {
         let env = Env::default();
         let contract_id = env.register(ProposalRegistry, ());
