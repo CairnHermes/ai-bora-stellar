@@ -239,10 +239,8 @@ mod test {
         token, Address, Env, String,
     };
     use super::*;
-
     #[test]
-    #[test]
-    fn test_create_payment() {
+fn test_create_payment() {
         let env = Env::default();
         let contract_id = env.register(PaymentSplitter, ());
         let client = PaymentSplitterClient::new(&env, &contract_id);
@@ -272,10 +270,8 @@ mod test {
         assert_eq!(payment.collaborator_amount, 300000000);
         assert_eq!(payment.status, String::from_str(&env, "pending"));
     }
-
     #[test]
-    #[test]
-    fn test_70_30_split_precision() {
+fn test_70_30_split_precision() {
         let env = Env::default();
         let contract_id = env.register(PaymentSplitter, ());
         let client = PaymentSplitterClient::new(&env, &contract_id);
@@ -312,10 +308,8 @@ mod test {
             1234567891 - payment.admin_amount
         );
     }
-
     #[test]
-    #[test]
-    fn test_extend_payment_ttl() {
+fn test_extend_payment_ttl() {
         let env = Env::default();
         let contract_id = env.register(PaymentSplitter, ());
         let client = PaymentSplitterClient::new(&env, &contract_id);
@@ -340,10 +334,8 @@ mod test {
 
         assert!(client.payment_exists(&String::from_str(&env, "pay-004")));
     }
-
     #[test]
-    #[test]
-    fn test_calculate_split() {
+fn test_calculate_split() {
         let (admin, collab) = PaymentSplitter::calculate_split(1000000000);
         assert_eq!(admin, 700000000);
         assert_eq!(collab, 300000000);
@@ -540,10 +532,8 @@ mod test {
         assert_eq!(PaymentSplitter::calculate_split(100), (70, 30));
         assert_eq!(PaymentSplitter::calculate_split(101), (70, 31));
     }
-
     #[test]
-    #[test]
-    #[should_panic(expected = "Invalid total amount: must be positive")]
+#[should_panic(expected = "Invalid total amount: must be positive")]
     fn test_create_payment_rejects_zero_total() {
         let env = Env::default();
         let contract_id = env.register(PaymentSplitter, ());
